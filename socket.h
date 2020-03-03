@@ -17,7 +17,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/uio.h>
-#include <unibstd.h>
+#include <unistd.h>
 #include <sys/wait.h>
 #include <sys/un.h>
 #include <strings.h>
@@ -109,9 +109,10 @@ struct if_nameindex {
 };
 #endif
 
-#ifndef HAVE_TIMESPEC_STRUCT
-struct timespec {
-  time_t tv_sex;
-  long tv_nsec;
-};
+// #ifndef HAVE_TIMESPEC_STRUCT
+// struct timespec {
+//   time_t tv_sec;
+//   long tv_nsec;
+// };
+// #endif
 #endif
