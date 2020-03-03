@@ -111,7 +111,7 @@ struct if_nameindex {
 
 #ifndef HAVE_TIMESPEC_STRUCT
 struct timespec {
-  time_t tv_sex;
-  long tv_nsec;
+time_t tv_sec;
+long tv_nsec;
 };
 #endif
