@@ -17,7 +17,7 @@
 #include <string.h>
 #include <sys/stat.h>
 #include <sys/uio.h>
-#include <unibstd.h>
+#include <unistd.h>
 #include <sys/wait.h>
 #include <sys/un.h>
 #include <strings.h>
@@ -53,6 +53,11 @@
 
 #ifndef INET_ADDRSTRLEN
 #define INET_ADDRSTRLEN 16
+#endif
+
+#ifndef HAVE_BZERO
+#define bzero(ptr,n) memset(ptr, 0, n)
+#define HAVE_BZERO
 #endif
 
 #ifndef HAVE_GETHOSTBYNAME2
@@ -108,10 +113,4 @@ struct if_nameindex {
   char *if_name;
 };
 #endif
-
-#ifndef HAVE_TIMESPEC_STRUCT
-struct timespec {
-time_t tv_sec;
-long tv_nsec;
-};
 #endif
