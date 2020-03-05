@@ -1,6 +1,7 @@
 #ifndef __socket_h
 #define __socket_h
 
+#include <dirent.h>
 #include <sys/socket.h>
 #include <sys/types.h>
 #include <sys/time.h>

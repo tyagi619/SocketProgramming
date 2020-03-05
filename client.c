@@ -1,4 +1,5 @@
 #include "socket.h"
+#include "command_client.c"
 
 int Socket(int family, int type,int protocol){
 	int n;
@@ -46,24 +47,23 @@ int main(int argc, char **argv){
 	char buff[1024];
 	int option;
 	while(1){
-		scanf("Enter Key For The Coomand 1. Put \n 2. Get \n 3. Mput \n 4. Mget \n: %d",option);
+		scanf("Enter Key For The Coomand 1. Put \n 2. Get \n 3. Mput \n 4. Mget \n 5. Close Connection :\n %d",option);
 		switch(option){
 			case 1 :
 				break;
 			case 2 :
 				scanf("Enter Filename : %s",buff);
-				writen()
+				getfile(sockfd,buff,sizeof(1024));
 				break;
 			case 3 :
 			case 4 :
+			case 5 :
+				close(sockfd);
+				goto out;
 			default :
 				printf("Command not recognized\n");
 		}
-
 	}
-
-
-
-
+	out:
 	return 0;
 }

@@ -1,7 +1,7 @@
 #include "socket.h"
 #include "rw.c"
 #include <time.h>
-#include <dirent.h>
+#include "command_server.c"
 
 int Socket(int family, int type,int protocol){
 	int n;
@@ -11,6 +11,7 @@ int Socket(int family, int type,int protocol){
 	}
 	return (n);
 }
+
 
 int main(int argc, char **argv){
 	int listenfd, connfd;
@@ -26,28 +27,38 @@ int main(int argc, char **argv){
 
 	bind(listenfd, (SA *) &servaddr, sizeof(servaddr));
 	listen(listenfd, LISTENQ);
-
+	char buff[1024];
 	for(;;){
 		connfd = accept(listenfd, (SA *) NULL, NULL);
-		DIR *d;
-		FILE *fp;
-		struct dirent *dir;
-		d = opendir("/home/anu/Downloads");
-		if (d){
-				 while ((dir = readdir(d)) != NULL)
-				 {
-						 if(dir->d_type==DT_REG){
-							 	 snprintf(buff, sizeof(buff), "%s\n",dir->d_name);
-								 write(connfd,buff,strlen(buff));
-						 }
-				 }
-		}
-		closedir(d);
+		recv_cmd(connfd,buff,sizeof(char));
+		switch(buff[0]){
+			case '1':
+				break;
+			case '2':
+				recv_cmd(connfd,buff,sizeof(buff));
+				if(check_file(buff)){
+					send_confirm(connfd,true);
+					send_file(connfd,buff);	
+				}
+				else{
+					send_confirm(connfd,false);
+				}
 
-		fp = fopen("/home/anu/Downloads/Programming/a.txt","r");
-		if(writen(connfd,(void *)fp) < 0){
-			printf("Error sending file\n");
+				break;
+			case '3':
+				break;
+			case '4':
+				break;
+			default:
+				printf("If this Line works then i don't know how the code is running. i guess TCP has an error then.\n");
 		}
+
 		close(connfd);
 	}
+
+
+
+
+
+
 }

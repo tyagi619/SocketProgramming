@@ -1,11 +1,10 @@
-ssize_t readn(int fd,void *vptr, size_t n){
-  size_t nleft;
+ssize_t readn(int fd,void *vptr){
+  File *fp = (File *)vptr;
+  size_t n;
   ssize_t nread;
-  char *ptr;
+  char ptr[1024];
 
-  ptr = vptr;
-  nleft = n;
-  while(nleft > 0){
+  while(1){
       if((nread = read(fd,ptr,nleft)) < 0){
           if(errno == EINTR)
               nread=0;
@@ -15,11 +14,12 @@ ssize_t readn(int fd,void *vptr, size_t n){
       else if( nread==0 ){
           break;
       }
-      nleft -= nread;
-      ptr += nread;
+
+      fwrite(ptr,sizeof(char),sizeof(ptr)/sizeof(char),fp);
+      n += nread;
   }
 
-  return (n-nleft);
+  return n;
 }
 
 ssize_t writen(int fd,void *vptr){
@@ -82,4 +82,22 @@ ssize_t send_cmd(int fd,const void *vptr, size_t n){
       ptr += nwritten;
   }
   return (n-nleft);
+}
+
+ssize_t recv_cmd(int fd,void *vptr, size_t n){
+  read_again :
+  int bytes_read = read(fd,(char*)vptr,n);
+  if(bytes_read == 0){
+    return 0;
+  }
+  if(bytes_read < 0){
+    if(errno == EINTR){
+      bytes_read = 0;
+      goto read_again;
+    }
+    else{
+      return -1;
+    }
+  }
+  return (ssize_t) bytes_read;
 }
