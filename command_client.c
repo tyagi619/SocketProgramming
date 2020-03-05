@@ -26,7 +26,7 @@ bool check_file(char* buff){
   return false;
 }
 bool recv_confirm(int fd){
-    char arr[2];
+    char arr[3];
     int bytes_read;
     recv_again :
     bytes_read = read(fd,arr,sizeof(char));

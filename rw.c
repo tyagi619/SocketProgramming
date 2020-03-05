@@ -86,10 +86,9 @@ ssize_t send_cmd(int fd,const void *vptr, size_t n){
 
 ssize_t recv_cmd(int fd,void *vptr, size_t n){
   int bytes_read;
-  printf("Testing\n");
   read_again :
   bytes_read = read(fd,(char*)vptr,n);
-  printf("Testis\n");
+  char *c = (char *)vptr;
   if(bytes_read == 0){
     return 0;
   }

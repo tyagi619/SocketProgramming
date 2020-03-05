@@ -27,29 +27,31 @@ int main(int argc, char **argv){
 
 	bind(listenfd, (SA *) &servaddr, sizeof(servaddr));
 	listen(listenfd, LISTENQ);
-	printf("Ravi\n");
 	char temp[2] = "0";
+	printf("Waiting for Connection\n");
 	for(;;){
-		printf("Anubhav\n");
 		connfd = accept(listenfd, (SA *) NULL, NULL);
-		printf("Anubhav\n");
-		recv_cmd(connfd,buff,sizeof(char));
+		printf("Connection Successful\n");
+		recv_cmd(connfd,buff,sizeof(buff));
 		send_cmd(connfd,temp,sizeof(temp));
-		printf("%c\n",buff[0]);
+		printf("Option chosen : %c\n",buff[0]);
 		switch(buff[0]){
 			case '1':
 				break;
 			case '2':
 				recv_cmd(connfd,buff,sizeof(buff));
 
-				printf("%s\n",buff);
+				printf("Requested File : %s\n",buff);
 				if(check_file(buff)){
 					send_confirm(connfd,true);
+					printf("Sending File ...\n");
 					send_file(connfd,buff);
+					printf("File Sent\n");
 					send_cmd(connfd,temp,sizeof(temp));
 				}
 				else{
 					send_confirm(connfd,false);
+					printf("Requested File Not Found : %s\n",buff);
 				}
 
 				break;
