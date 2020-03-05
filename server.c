@@ -30,6 +30,7 @@ int main(int argc, char **argv){
 	for(;;){
 		connfd = accept(listenfd, (SA *) NULL, NULL);
 		DIR *d;
+		FILE *fp;
 		struct dirent *dir;
 		d = opendir("/home/anu/Downloads");
 		if (d){
@@ -40,11 +41,13 @@ int main(int argc, char **argv){
 								 write(connfd,buff,strlen(buff));
 						 }
 				 }
-		 }
-		 closedir(d);
-		// ticks = time(NULL);
-		// snprintf(buff, sizeof(buff), "%.24s\r\n", ctime(&ticks));
-		// write(connfd, buff, strlen(buff));
+		}
+		closedir(d);
+
+		fp = fopen("/home/anu/Downloads/Programming/a.txt","r");
+		if(writen(connfd,(void *)fp) < 0){
+			printf("Error sending file\n");
+		}
 		close(connfd);
 	}
 }
