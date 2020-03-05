@@ -19,7 +19,7 @@ int main(int argc, char **argv){
 		return -1;
 	}
 	sockfd = Socket(AF_INET, SOCK_STREAM, 0);
-	
+
 	bzero(&servaddr, sizeof(servaddr));
 	servaddr.sin_family = AF_INET;
 	servaddr.sin_port = htons(SERV_PORT); /* daytime server */
@@ -43,5 +43,27 @@ int main(int argc, char **argv){
 		printf("read error");
 		return -1;
 	}
+	char buff[1024];
+	int option;
+	while(1){
+		scanf("Enter Key For The Coomand 1. Put \n 2. Get \n 3. Mput \n 4. Mget \n: %d",option);
+		switch(option){
+			case 1 :
+				break;
+			case 2 :
+				scanf("Enter Filename : %s",buff);
+				writen()
+				break;
+			case 3 :
+			case 4 :
+			default :
+				printf("Command not recognized\n");
+		}
+
+	}
+
+
+
+
 	return 0;
 }
