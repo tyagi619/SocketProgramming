@@ -1,4 +1,5 @@
 #include "socket.h"
+#include "rw.c"
 
 int recv_file(int fd,char* buff,int size){
   FILE* fp = fopen(buff,"w");
@@ -26,10 +27,11 @@ bool check_file(char* buff){
 }
 bool recv_confirm(int fd){
     char arr[2];
+    int bytes_read;
     recv_again :
-    int bytes_read = read(fd,arr,sizeof(char));
+    bytes_read = read(fd,arr,sizeof(char));
     if(bytes_read == 0){
-      break;
+      return 0;
     }
     if(bytes_read < 0){
       if(errno == EINTR){
@@ -46,15 +48,15 @@ bool recv_confirm(int fd){
 int getfile(int fd,char* buff, int size){
   char temp[2] = "2" ;
   if(check_file(buff)){
-    here :
     char option;
-    scanf("Do You Wish To Overwrite %s Y/N : %c",buff,option);
+    here :
+    scanf("Do You Wish To Overwrite %s Y/N : %c",buff,&option);
     if(option == 'N' || option == 'n'){
       return 0;
     }
     else if(option != 'Y' || option != 'y'){
       printf("Option not recognized\n");
-      scanf("Do You Wish To Overwrite %s Y/N : %c",buff,option);
+      scanf("Do You Wish To Overwrite %s Y/N : %c",buff,&option);
       goto here;
     }
   }

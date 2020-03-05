@@ -47,7 +47,7 @@ int main(int argc, char **argv){
 	char buff[1024];
 	int option;
 	while(1){
-		scanf("Enter Key For The Coomand 1. Put \n 2. Get \n 3. Mput \n 4. Mget \n 5. Close Connection :\n %d",option);
+		scanf("Enter Key For The Coomand 1. Put \n 2. Get \n 3. Mput \n 4. Mget \n 5. Close Connection :\n %d",&option);
 		switch(option){
 			case 1 :
 				break;
