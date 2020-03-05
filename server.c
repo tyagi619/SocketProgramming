@@ -28,21 +28,25 @@ int main(int argc, char **argv){
 	bind(listenfd, (SA *) &servaddr, sizeof(servaddr));
 	listen(listenfd, LISTENQ);
 	printf("Ravi\n");
+	char temp[2] = "0";
 	for(;;){
 		printf("Anubhav\n");
 		connfd = accept(listenfd, (SA *) NULL, NULL);
 		printf("Anubhav\n");
 		recv_cmd(connfd,buff,sizeof(char));
+		send_cmd(connfd,temp,sizeof(temp));
 		printf("%c\n",buff[0]);
 		switch(buff[0]){
 			case '1':
 				break;
 			case '2':
-				recv_cmd(connfd,buff,5);
+				recv_cmd(connfd,buff,sizeof(buff));
+
 				printf("%s\n",buff);
 				if(check_file(buff)){
 					send_confirm(connfd,true);
 					send_file(connfd,buff);
+					send_cmd(connfd,temp,sizeof(temp));
 				}
 				else{
 					send_confirm(connfd,false);

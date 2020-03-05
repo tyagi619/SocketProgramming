@@ -62,10 +62,13 @@ int getfile(int fd,char* buff, int size){
   }
 
   send_cmd(fd,temp,sizeof(temp));
+  recv_cmd(fd,temp,sizeof(temp));
 
   send_cmd(fd,buff,size);
+
   if(recv_confirm(fd)){
     recv_file(fd,buff,size);
+    recv_cmd(fd,temp,sizeof(temp));
   }
   else{
     printf("The requested file does not exist\n");

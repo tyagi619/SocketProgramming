@@ -46,7 +46,7 @@ int main(int argc, char **argv){
 			case 2 :
 				printf("Enter Filename : ");
 				scanf("%s", buff);
-				getfile(sockfd,buff,sizeof(1024));
+				getfile(sockfd,buff,sizeof(buff));
 				break;
 			case 3 :
 			case 4 :

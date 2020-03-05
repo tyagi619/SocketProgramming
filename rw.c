@@ -5,7 +5,7 @@ ssize_t readn(int fd,void *vptr){
   char ptr[1024];
 
   while(1){
-      if((nread = read(fd,ptr,1024)) < 0){
+      if((nread = read(fd,ptr,sizeof(ptr))) < 0){
           if(errno == EINTR)
               nread=0;
           else
