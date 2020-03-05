@@ -22,6 +22,7 @@
 #include <sys/wait.h>
 #include <sys/un.h>
 #include <strings.h>
+#include <stdbool.h>
 
 #ifdef HAVE_SYS_IOCTL_H
 #include <sys/ioctl.h>

@@ -1,13 +1,14 @@
 #include "socket.h"
 
 bool check_file(char* buff){
-  Dir *d;
+  DIR *d;
+  struct dirent *dir;
   d = opendir(".");
   if (d){
        while ((dir = readdir(d)) != NULL)
        {
            if(dir->d_type==DT_REG){
-               if(strcmp(dir->dname,buff) == 0){
+               if(strcmp(dir->d_name,buff) == 0){
                  closedir(d);
                  return true;
                }
@@ -23,9 +24,10 @@ int send_confirm(int fd,bool option){
   if(option){
       arr[0] = '1';
   }
+  int bytes_written;
   send_confirm_again :
-  int bytes_written = write(fd,arr,sizeof(char));
-  if(byte_written < 0){
+  bytes_written = write(fd,arr,sizeof(char));
+  if(bytes_written < 0){
     if(errno == EINTR){
       goto send_confirm_again;
     }
@@ -34,7 +36,7 @@ int send_confirm(int fd,bool option){
 }
 
 int send_file(int fd,char* buff){
-  File* fp = fopen(buff,"r");
+  FILE* fp = fopen(buff,"r");
   writen(fd,(void* )fp);
   fclose(fp);
   return 0;

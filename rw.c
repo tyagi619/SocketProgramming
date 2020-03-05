@@ -1,11 +1,11 @@
 ssize_t readn(int fd,void *vptr){
-  File *fp = (File *)vptr;
+  FILE *fp = (FILE *)vptr;
   size_t n;
   ssize_t nread;
   char ptr[1024];
 
   while(1){
-      if((nread = read(fd,ptr,nleft)) < 0){
+      if((nread = read(fd,ptr,1024)) < 0){
           if(errno == EINTR)
               nread=0;
           else
@@ -85,8 +85,9 @@ ssize_t send_cmd(int fd,const void *vptr, size_t n){
 }
 
 ssize_t recv_cmd(int fd,void *vptr, size_t n){
+  int bytes_read;
   read_again :
-  int bytes_read = read(fd,(char*)vptr,n);
+  bytes_read = read(fd,(char*)vptr,n);
   if(bytes_read == 0){
     return 0;
   }

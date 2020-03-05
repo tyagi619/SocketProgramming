@@ -27,7 +27,7 @@ int main(int argc, char **argv){
 
 	bind(listenfd, (SA *) &servaddr, sizeof(servaddr));
 	listen(listenfd, LISTENQ);
-	char buff[1024];
+
 	for(;;){
 		connfd = accept(listenfd, (SA *) NULL, NULL);
 		recv_cmd(connfd,buff,sizeof(char));
@@ -38,7 +38,7 @@ int main(int argc, char **argv){
 				recv_cmd(connfd,buff,sizeof(buff));
 				if(check_file(buff)){
 					send_confirm(connfd,true);
-					send_file(connfd,buff);	
+					send_file(connfd,buff);
 				}
 				else{
 					send_confirm(connfd,false);

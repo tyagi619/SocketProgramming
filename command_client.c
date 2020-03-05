@@ -1,19 +1,20 @@
 #include "socket.h"
 
 int recv_file(int fd,char* buff,int size){
-  File* fp = fopen(buff,"w");
+  FILE* fp = fopen(buff,"w");
   readn(fd,(void *)fp);
   return 0;
 }
 
 bool check_file(char* buff){
-  Dir *d;
+  DIR *d;
+  struct dirent *dir;
   d = opendir(".");
   if (d){
        while ((dir = readdir(d)) != NULL)
        {
            if(dir->d_type==DT_REG){
-               if(strcmp(dir->dname,buff) == 0){
+               if(strcmp(dir->d_name,buff) == 0){
                  closedir(d);
                  return true;
                }
