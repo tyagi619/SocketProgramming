@@ -35,7 +35,7 @@ int main(int argc, char **argv){
 			case '1':
 				break;
 			case '2':
-				recv_cmd(connfd,buff,sizeof(buff));
+				recv_cmd(connfd,buff,40);
 				if(check_file(buff)){
 					send_confirm(connfd,true);
 					send_file(connfd,buff);
