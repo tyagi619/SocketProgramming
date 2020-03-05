@@ -24,21 +24,20 @@ int main(int argc, char **argv){
 	bzero(&servaddr, sizeof(servaddr));
 	servaddr.sin_family = AF_INET;
 	servaddr.sin_port = htons(SERV_PORT); /* daytime server */
-	printf("Testing1\n");
 	if (inet_pton(AF_INET, argv[1], &servaddr.sin_addr) <= 0){
 		printf("inet_pton error for %s", argv[1]);
 		return -1;
 	}
-	printf("Testing\n");
+	printf("Attempting to connect\n");
 	if (connect(sockfd, (SA *) &servaddr, sizeof(servaddr)) < 0){
 		printf("connect error");
 		return -1;
 	}
-	printf("Testing Succes\n" );
+	printf("Connection Successful\n");
 	char buff[1024];
 	int option;
 	while(1){
-		printf("Enter Key For The Coomand 1. Put \n 2. Get \n 3. Mput \n 4. Mget \n 5. Close Connection :\n");
+		printf("\nEnter Key For The Coomand\n 1. Put \n 2. Get \n 3. Mput \n 4. Mget \n 5. Close Connection :\n");
 		scanf("%d", &option);
 		switch(option){
 			case 1 :

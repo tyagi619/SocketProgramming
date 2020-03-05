@@ -29,7 +29,7 @@ int send_confirm(int fd,bool option){
   }
   int bytes_written;
   send_confirm_again :
-  bytes_written = write(fd,arr,sizeof(char));
+  bytes_written = write(fd,arr,sizeof(arr));
   if(bytes_written < 0){
     if(errno == EINTR){
       goto send_confirm_again;

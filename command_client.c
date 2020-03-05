@@ -2,10 +2,9 @@
 #include "rw.c"
 
 int recv_file(int fd,char* buff,int size){
-  FILE* fp = fopen(buff,"rw+");
-  printf("%s\n",buff );
+  FILE* fp = fopen(buff,"w+");
   if(!fp){
-    printf("Sorry\n");
+    printf("File could not be opened\n");
     return 0;
   }
   readn(fd,(void *)fp);
@@ -14,6 +13,7 @@ int recv_file(int fd,char* buff,int size){
 }
 
 bool check_file(char* buff){
+  printf("Checking %s on local host\n",buff );
   DIR *d;
   struct dirent *dir;
   d = opendir(".");
@@ -24,19 +24,22 @@ bool check_file(char* buff){
                // printf("%s %s\n",dir->d_name,buff);
                if(strcmp(dir->d_name,buff) == 0){
                  closedir(d);
+                 printf("%s found\n",buff );
                  return true;
                }
            }
        }
   }
   closedir(d);
+  printf("%s not found\n",buff );
   return false;
 }
 bool recv_confirm(int fd){
-    char arr[3];
+    char arr[2];
     int bytes_read;
     recv_again :
-    bytes_read = read(fd,arr,sizeof(char));
+    bytes_read = read(fd,arr,sizeof(arr));
+    printf("%s\n",arr );
     if(bytes_read == 0){
       return 0;
     }
@@ -58,12 +61,13 @@ int getfile(int fd,char* buff, int size){
     char option;
     here :
     printf("Do You Wish To Overwrite %s Y/N :",buff);
-    scanf("%c", &option);
+    fflush(stdin);
+    scanf("\n%c", &option);
     if(option == 'N' || option == 'n'){
       return 0;
     }
     else if(option != 'Y' && option != 'y'){
-      printf("Option not recognized\n");
+      printf("Option not recognized %c\n",option);
       goto here;
     }
   }
