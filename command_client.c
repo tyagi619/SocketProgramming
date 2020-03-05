@@ -50,13 +50,13 @@ int getfile(int fd,char* buff, int size){
   if(check_file(buff)){
     char option;
     here :
-    scanf("Do You Wish To Overwrite %s Y/N : %c",buff,&option);
+    printf("Do You Wish To Overwrite %s Y/N :",buff);
+    scanf("%c", &option);
     if(option == 'N' || option == 'n'){
       return 0;
     }
-    else if(option != 'Y' || option != 'y'){
+    else if(option != 'Y' && option != 'y'){
       printf("Option not recognized\n");
-      scanf("Do You Wish To Overwrite %s Y/N : %c",buff,&option);
       goto here;
     }
   }
