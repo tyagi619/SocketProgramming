@@ -39,7 +39,7 @@ bool recv_confirm(int fd){
     int bytes_read;
     recv_again :
     bytes_read = read(fd,arr,sizeof(arr));
-    printf("%s\n",arr );
+    printf("%d\n",(int)arr[0]);
     if(bytes_read == 0){
       return 0;
     }
@@ -61,7 +61,6 @@ int getfile(int fd,char* buff, int size){
     char option;
     here :
     printf("Do You Wish To Overwrite %s Y/N :",buff);
-    fflush(stdin);
     scanf("\n%c", &option);
     if(option == 'N' || option == 'n'){
       return 0;

@@ -32,37 +32,37 @@ int main(int argc, char **argv){
 	for(;;){
 		connfd = accept(listenfd, (SA *) NULL, NULL);
 		printf("Connection Successful\n");
-		recv_cmd(connfd,buff,sizeof(buff));
-		send_cmd(connfd,temp,sizeof(temp));
-		printf("Option chosen : %c\n",buff[0]);
-		switch(buff[0]){
-			case '1':
-				break;
-			case '2':
+		while(1){
 				recv_cmd(connfd,buff,sizeof(buff));
+				send_cmd(connfd,temp,sizeof(temp));
+				printf("Option chosen : %c\n",buff[0]);
+				switch(buff[0]){
+					case '1':
+						break;
+					case '2':
+						recv_cmd(connfd,buff,sizeof(buff));
 
-				printf("Requested File : %s\n",buff);
-				if(check_file(buff)){
-					send_confirm(connfd,true);
-					printf("Sending File ...\n");
-					send_file(connfd,buff);
-					printf("File Sent\n");
-					send_cmd(connfd,temp,sizeof(temp));
+						printf("Requested File : %s\n",buff);
+						if(check_file(buff)){
+							send_confirm(connfd,true);
+							printf("Sending File ...\n");
+							send_file(connfd,buff);
+							printf("File Sent\n");
+							send_cmd(connfd,temp,sizeof(temp));
+						}
+						else{
+							send_confirm(connfd,false);
+							printf("Requested File Not Found : %s\n",buff);
+						}
+						break;
+					case '3':
+						break;
+					case '4':
+						break;
+					default:
+						printf("If this Line works then i don't know how the code is running. i guess TCP has an error then.\n");
 				}
-				else{
-					send_confirm(connfd,false);
-					printf("Requested File Not Found : %s\n",buff);
-				}
-
-				break;
-			case '3':
-				break;
-			case '4':
-				break;
-			default:
-				printf("If this Line works then i don't know how the code is running. i guess TCP has an error then.\n");
 		}
-
 		close(connfd);
 	}
 
