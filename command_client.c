@@ -2,8 +2,14 @@
 #include "rw.c"
 
 int recv_file(int fd,char* buff,int size){
-  FILE* fp = fopen(buff,"w");
+  FILE* fp = fopen(buff,"rw+");
+  printf("%s\n",buff );
+  if(!fp){
+    printf("Sorry\n");
+    return 0;
+  }
   readn(fd,(void *)fp);
+  fclose(fp);
   return 0;
 }
 
@@ -15,6 +21,7 @@ bool check_file(char* buff){
        while ((dir = readdir(d)) != NULL)
        {
            if(dir->d_type==DT_REG){
+               // printf("%s %s\n",dir->d_name,buff);
                if(strcmp(dir->d_name,buff) == 0){
                  closedir(d);
                  return true;

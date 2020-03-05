@@ -3,8 +3,10 @@ ssize_t readn(int fd,void *vptr){
   size_t n;
   ssize_t nread;
   char ptr[1024];
-
+  printf("ravishankar\n");
   while(1){
+    printf("ravishankaraaa\n");
+
       if((nread = read(fd,ptr,sizeof(ptr))) < 0){
           if(errno == EINTR)
               nread=0;
@@ -14,8 +16,10 @@ ssize_t readn(int fd,void *vptr){
       else if( nread==0 ){
           break;
       }
-
+      printf("ravishankarrrrr\n");
       fwrite(ptr,sizeof(char),sizeof(ptr)/sizeof(char),fp);
+      printf("Data read from buffer :\n");
+      printf("%s\n",ptr);
       n += nread;
   }
 
