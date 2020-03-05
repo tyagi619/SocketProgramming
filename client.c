@@ -1,5 +1,14 @@
 #include "socket.h"
 
+int Socket(int family, int type,int protocol){
+	int n;
+	if((n=socket(family,type,protocol))<0){
+		printf("error\n");
+		exit(0);
+	}
+	return (n);
+}
+
 int main(int argc, char **argv){
 	int sockfd, n;
 	char recvline[MAXLINE + 1];
@@ -9,10 +18,8 @@ int main(int argc, char **argv){
 		printf("usage: a.out <IPaddress>");
 		return -1;
 	}
-	if ( (sockfd = socket(AF_INET, SOCK_STREAM, 0)) < 0){
-		printf("socket error");
-		return 0;
-	}
+	sockfd = Socket(AF_INET, SOCK_STREAM, 0);
+	
 	bzero(&servaddr, sizeof(servaddr));
 	servaddr.sin_family = AF_INET;
 	servaddr.sin_port = htons(SERV_PORT); /* daytime server */

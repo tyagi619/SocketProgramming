@@ -1,5 +1,7 @@
 #include "socket.h"
+#include "rw.c"
 #include <time.h>
+#include <dirent.h>
 
 int Socket(int family, int type,int protocol){
 	int n;
@@ -27,9 +29,22 @@ int main(int argc, char **argv){
 
 	for(;;){
 		connfd = accept(listenfd, (SA *) NULL, NULL);
-		ticks = time(NULL);
-		snprintf(buff, sizeof(buff), "%.24s\r\n", ctime(&ticks));
-		write(connfd, buff, strlen(buff));
+		DIR *d;
+		struct dirent *dir;
+		d = opendir("/home/anu/Downloads");
+		if (d){
+				 while ((dir = readdir(d)) != NULL)
+				 {
+						 if(dir->d_type==DT_REG){
+							 	 snprintf(buff, sizeof(buff), "%s\n",dir->d_name);
+								 write(connfd,buff,strlen(buff));
+						 }
+				 }
+		 }
+		 closedir(d);
+		// ticks = time(NULL);
+		// snprintf(buff, sizeof(buff), "%.24s\r\n", ctime(&ticks));
+		// write(connfd, buff, strlen(buff));
 		close(connfd);
 	}
 }

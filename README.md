@@ -17,3 +17,12 @@ struct sockaddr_in {
   struct in_addr sin_addr;
   char sin_zero[8];
 };
+
+/* converts string IP address to 32 bit address * /
+int inet_pton (int family, const char * strptr, void * addrptr);
+
+/* converts 32 bit address to string IP address with dot * /
+const char * inet_ntop (int family, const void * addrptr, char * strptr, size_t len);
+
+
+Page 89 readn, writen and readline implementations
