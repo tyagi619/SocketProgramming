@@ -1,9 +1,12 @@
-ssize_t readn(int fd,void *vptr){
+ssize_t readn(int fd,void *vptr,long int size){
+  printf("Recieving file in progress\n");
   FILE *fp = (FILE *)vptr;
+  long int nleft = size;
   size_t n;
   ssize_t nread;
   char ptr[1024];
-  while(1){
+  while(nleft>0){
+      printf("%ld\n", nleft);
       if((nread = read(fd,ptr,sizeof(ptr))) < 0){
           if(errno == EINTR)
               nread=0;
@@ -14,11 +17,10 @@ ssize_t readn(int fd,void *vptr){
           break;
       }
       fwrite(ptr,sizeof(char),sizeof(ptr)/sizeof(char),fp);
-      printf("Data read from buffer :\n");
-      printf("%s\n",ptr);
       n += nread;
+      nleft -= nread;
   }
-
+  printf("Recieving file finished\n");
   return n;
 }
 
@@ -88,7 +90,7 @@ ssize_t recv_cmd(int fd,void *vptr, size_t n){
   int bytes_read;
   read_again :
   bytes_read = read(fd,(char*)vptr,n);
-  char *c = (char *)vptr;
+  // printf("Bytes read %d\n",bytes_read);
   if(bytes_read == 0){
     return 0;
   }
