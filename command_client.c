@@ -1,69 +1,6 @@
 #include "socket.h"
-#include "rw.c"
+#include "common_function.c"
 
-int recv_file(int fd,char* buff,long int size){
-  FILE* fp = fopen(buff,"w+");
-  if(!fp){
-    printf("File could not be opened\n");
-    return 0;
-  }
-  readn(fd,(void *)fp,size);
-  fclose(fp);
-  return 0;
-}
-
-bool check_file(char* buff){
-  printf("Checking %s on local host\n",buff );
-  DIR *d;
-  struct dirent *dir;
-  d = opendir(".");
-  if (d){
-       while ((dir = readdir(d)) != NULL)
-       {
-           if(dir->d_type==DT_REG){
-               if(strcmp(dir->d_name,buff) == 0){
-                 closedir(d);
-                 printf("%s found\n",buff );
-                 return true;
-               }
-           }
-       }
-  }
-  closedir(d);
-  printf("%s not found\n",buff );
-  return false;
-}
-bool recv_confirm(int fd){
-    char arr[2];
-    int bytes_read;
-
-    recv_again :
-    bytes_read = read(fd,arr,sizeof(arr));
-    printf("Server returned file status : %s\n",arr);
-
-    if(bytes_read == 0){
-      return 0;
-    }
-    if(bytes_read < 0){
-      if(errno == EINTR){
-        bytes_read = 0;
-        goto recv_again;
-      }
-      else{
-        return -1;
-      }
-    }
-    return (arr[0] == '1');
-}
-
-long int recv_file_size(int fd){
-  char size_file[11];
-  recv_cmd(fd,size_file,sizeof(size_file));
-  printf("Recieved file size\n");
-  long int file_size = atol(size_file);
-  printf("Size of requested file is: %ld bytes\n\n", file_size);
-  return file_size;
-}
 
 int getfile(int fd,char* buff, int size){
   char temp[2] = "2" ;
@@ -114,5 +51,90 @@ int getfile(int fd,char* buff, int size){
   else{
     printf("The requested file does not exist\n");
   }
+  return 0;
+}
+
+int putfile(int fd,char* buff, int size){
+  char temp[2] = "1";
+
+  send_cmd(fd,temp,sizeof(temp));
+  recv_cmd(fd,temp,sizeof(temp));
+
+  send_cmd(fd,buff,sizeof(buff));
+  if(recv_confirm(fd)){
+    char option;
+    recv_confirmation:
+    printf("The file already exists on remote host. Do you wish to overwrite : \n");
+    scanf("\n%s",&option);
+
+    if(option == 'N' || option == 'n'){
+      send_confirm(fd,false);
+      recv_cmd(fd,temp,sizeof(temp));
+      return 0;
+    }
+    else if(option == 'Y' || option == 'y'){
+      send_confirm(fd,true);
+      recv_cmd(fd,temp,sizeof(temp));
+    }
+    else if(option != 'Y' && option != 'y'){
+      printf("Option not recognized %c\n",option);
+      goto recv_confirmation;
+    }
+  }
+  else{
+    send_confirm(fd,true);
+    recv_cmd(fd,temp,sizeof(temp));
+  }
+
+  send_file(fd,buff);
+  recv_cmd(fd,temp,sizeof(temp));
+
+  return 0;
+}
+
+int mgetfile(int fd,char *buff){
+  char temp[2] = "4";
+
+  send_cmd(fd,temp,sizeof(temp));
+  recv_cmd(fd,temp,sizeof(temp));
+
+  send_cmd(fd,buff,sizeof(buff));
+  while(recv_confirm(fd)){
+    send_cmd(fd,temp,sizeof(temp));
+    recv_one_file(fd);
+  }
+
+  send_cmd(fd,temp,sizeof(temp));
+  recv_cmd(fd,temp,sizeof(temp));
+}
+
+int mputfile(int fd,char *buff){
+  char temp[3] = "3";
+
+  send_cmd(fd,temp,sizeof(temp));
+  recv_cmd(fd,temp,sizeof(temp));
+
+  DIR *d = opendir(".");
+  struct dirent *dir;
+  if(d){
+    while((dir = readdir(d))){
+      if(dir->d_type==DT_REG){
+        if(strstr(dir->d_name,buff)){
+            send_confirm(fd,true);
+            recv_cmd(fd,temp,sizeof(temp));
+            send_one_file(fd,dir->d_name);
+        }
+      }
+    }
+  }
+  send_confirm(fd,false);
+  recv_cmd(fd,temp,sizeof(temp));
+  return 0;
+}
+
+int closeConnection(int fd){
+  char temp[2] = "5";
+  send_cmd(fd,temp,sizeof(temp));
+  recv_cmd(fd,temp,sizeof(temp));
   return 0;
 }

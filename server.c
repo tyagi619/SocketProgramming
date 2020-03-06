@@ -1,5 +1,4 @@
 #include "socket.h"
-#include "rw.c"
 #include <time.h>
 #include "command_server.c"
 
@@ -48,50 +47,25 @@ int main(int argc, char **argv){
 
 				switch(temp[0]){
 					case '1':
+						put(connfd);
 						break;
 					case '2':
-						recv_cmd(connfd,buff,sizeof(buff));
-						printf("Requested File : %s\n",buff);
-
-						if(check_file(buff)){
-
-							send_confirm(connfd,true);
-							printf("Confirmation sent\n" );
-
-							recv_cmd(connfd,temp,sizeof(temp));
-							printf("ACK recieved\n");
-
-							send_file(connfd,buff);
-
-							recv_cmd(connfd,temp,sizeof(temp));
-							printf("ACK recieved\n");
-
-							send_cmd(connfd,temp,sizeof(temp));
-							printf("ACK sent\n");
-						}
-						else{
-
-							send_confirm(connfd,false);
-							printf("Confirmation sent\n" );
-							printf("Requested File Not Found : %s\n",buff);
-						}
+						get(connfd);
 						break;
 					case '3':
+						mput(connfd);
 						break;
 					case '4':
+						mget(connfd);
 						break;
 					case '5':
+						goto out;
 						break;
 					default:
 						printf("If this Line works then i don't know how the code is running. i guess TCP has an error then.\n");
 				}
 		}
+		out:
 		close(connfd);
 	}
-
-
-
-
-
-
 }

@@ -48,18 +48,30 @@ int main(int argc, char **argv){
 
 		switch(option){
 			case 1 :
+				printf("Enter Filename : ");
+				scanf("%s", buff);
+				if(check_file(buff)){
+					putfile(sockfd,buff,sizeof(buff));
+				}
+				else{
+					printf("The file %s does not exist\n",buff);
+				}
 				break;
 			case 2 :
-
 				printf("Enter Filename : ");
-
 				scanf("%s", buff);
-
 				getfile(sockfd,buff,sizeof(buff));
 				break;
 			case 3 :
+				printf("Enter File extension : ");
+				scanf("%s", buff);
+				mputfile(sockfd,buff);
 			case 4 :
+				printf("Enter File extension : ");
+				scanf("%s", buff);
+				mgetfile(sockfd,buff);
 			case 5 :
+				closeConnection(sockfd);
 				close(sockfd);
 				goto out;
 			default :
