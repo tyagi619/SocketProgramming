@@ -66,10 +66,12 @@ int main(int argc, char **argv){
 				printf("Enter File extension : ");
 				scanf("%s", buff);
 				mputfile(sockfd,buff);
+				break;
 			case 4 :
 				printf("Enter File extension : ");
 				scanf("%s", buff);
 				mgetfile(sockfd,buff);
+				break;
 			case 5 :
 				closeConnection(sockfd);
 				close(sockfd);

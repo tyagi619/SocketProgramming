@@ -62,6 +62,7 @@ int main(int argc, char **argv){
 						goto out;
 						break;
 					default:
+					return 0;
 						printf("If this Line works then i don't know how the code is running. i guess TCP has an error then.\n");
 				}
 		}

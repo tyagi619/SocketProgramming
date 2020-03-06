@@ -67,7 +67,6 @@ bool recv_confirm(int fd){
     recv_again :
     bytes_read = read(fd,arr,sizeof(arr));
     printf("Server returned file status : %s\n",arr);
-
     if(bytes_read == 0){
       return 0;
     }
@@ -128,6 +127,7 @@ int send_one_file(int fd, char *name){
   strcpy(buff,name);
 
   send_cmd(fd,buff,sizeof(buff));
+  printf("%s\n",buff);
   if(!recv_confirm(fd)){
     return 0;
   }
@@ -154,7 +154,7 @@ int recv_one_file(int fd){
       send_confirm(fd,false);
       return 0;
     }
-    else if(option == 'Y' || option == 'Y'){
+    else if(option == 'Y' || option == 'y'){
       send_confirm(fd,true);
     }
     else{
@@ -165,6 +165,67 @@ int recv_one_file(int fd){
   else{
     send_confirm(fd,true);
   }
+  long int file_size = recv_file_size(fd);
+  send_cmd(fd,temp,sizeof(temp));
+
+  recv_file(fd,buff,file_size);
+  send_cmd(fd,temp,sizeof(temp));
+  return 0;
+}
+
+int put_one_file(int fd, char *name){
+  char buff[1024];
+  char temp[2] = "1";
+  strcpy(buff,name);
+
+  send_cmd(fd,buff,sizeof(buff));
+  printf("%s\n",buff);
+  if(recv_confirm(fd)){
+    char option;
+
+    put_file_confirm:
+    printf("The file %s already exists. Do you want to overwrite? : ", buff);
+    scanf("\n%c",&option);
+    if(option == 'N' || option == 'n'){
+      send_confirm(fd,false);
+      recv_cmd(fd,temp,sizeof(temp));
+      return 0;
+    }
+    else if(option == 'Y' || option == 'y'){
+      send_confirm(fd,true);
+      recv_cmd(fd,temp,sizeof(temp));
+    }
+    else{
+      printf("Option not recognized.\n");
+      goto put_file_confirm;
+    }
+  }
+
+  send_file(fd,buff);
+  recv_cmd(fd,temp,sizeof(temp));
+  return 0;
+}
+
+int recv_put_one_file(int fd){
+  char buff[1024];
+  char temp[2] = "4";
+
+  recv_cmd(fd,buff,sizeof(buff));
+  if(check_file(buff)){
+    send_confirm(fd,true);
+  }
+  else{
+    send_confirm(fd,false);
+  }
+
+  if(recv_confirm(fd)){
+    send_cmd(fd,temp,sizeof(temp));
+  }
+  else{
+    send_cmd(fd,temp,sizeof(temp));
+    return 0;
+  }
+
   long int file_size = recv_file_size(fd);
   send_cmd(fd,temp,sizeof(temp));
 

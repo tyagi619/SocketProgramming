@@ -109,7 +109,7 @@ int mgetfile(int fd,char *buff){
 }
 
 int mputfile(int fd,char *buff){
-  char temp[3] = "3";
+  char temp[2] = "3";
 
   send_cmd(fd,temp,sizeof(temp));
   recv_cmd(fd,temp,sizeof(temp));
@@ -122,7 +122,7 @@ int mputfile(int fd,char *buff){
         if(strstr(dir->d_name,buff)){
             send_confirm(fd,true);
             recv_cmd(fd,temp,sizeof(temp));
-            send_one_file(fd,dir->d_name);
+            put_one_file(fd,dir->d_name);
         }
       }
     }

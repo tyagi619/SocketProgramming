@@ -69,11 +69,12 @@ int put(int fd){
 int mput(int fd){
   char buff[1024];
   char temp[2] = "3";
-
   while(recv_confirm(fd)){
     send_cmd(fd,temp,sizeof(temp));
-    recv_one_file(fd);
+    recv_put_one_file(fd);
   }
+  send_cmd(fd,temp,sizeof(temp));
+  return 0;
 }
 
 int mget(int fd){
