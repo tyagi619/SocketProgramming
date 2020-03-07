@@ -1,6 +1,6 @@
-ssize_t readn(int fd,void *vptr,long int size){
+ssize_t readn(int fd,int vptr,long int size){
   printf("Recieving file in progress\n");
-  FILE *fp = (FILE *)vptr;
+  int fp = vptr;
   long int nleft = size;
   size_t n;
   ssize_t nread;
@@ -16,22 +16,27 @@ ssize_t readn(int fd,void *vptr,long int size){
       else if( nread==0 ){
           break;
       }
-      fwrite(ptr,sizeof(char),sizeof(ptr)/sizeof(char),fp);
       n += nread;
       nleft -= nread;
+      printf("%ld\n", nread);
+      while(nread>0){
+        ssize_t bytes_written = write(fp,ptr,nread);
+        nread -= bytes_written;
+      }
   }
   printf("Recieving file finished\n");
   return n;
 }
 
-ssize_t writen(int fd,void *vptr){
+ssize_t writen(int fd,int vptr){
   size_t nleft,n = 0;
   ssize_t nwritten;
-  FILE *fp = (FILE *)vptr;
+  int fp = vptr;
   char ptr[1024];
   char *pt;
   while(1){
-    int bytes_read = fread(ptr,sizeof(char),sizeof(ptr)/sizeof(char),fp);
+    memset(ptr, 0x00, 1024);
+    int bytes_read = read(fp,ptr,sizeof(ptr));
     if(bytes_read == 0){
       break;
     }
@@ -43,22 +48,7 @@ ssize_t writen(int fd,void *vptr){
         return -1;
       }
     }
-    pt = ptr;
-    nleft = bytes_read;
-    while(nleft>0){
-        if((nwritten = write(fd,pt,nleft)) < 0){
-            if(errno == EINTR)
-                nwritten = 0;
-            else
-                return -1;
-        }
-        else if(nwritten == 0){
-            break;
-        }
-        n += nwritten;
-        nleft -= nwritten;
-        pt += nwritten;
-    }
+    send(fd, ptr, bytes_read, 0);
   }
   return n;
 }
@@ -68,8 +58,9 @@ ssize_t send_cmd(int fd,const void *vptr, size_t n){
   ssize_t nwritten;
   const char *ptr;
 
-  ptr = vptr;
+  ptr = (char *)vptr;
   nleft = n;
+  printf("nleft .......... %ld %s\n",nleft,ptr );
   while(nleft>0){
       if((nwritten = write(fd,ptr,nleft)) < 0){
           if(errno == EINTR)
@@ -80,6 +71,7 @@ ssize_t send_cmd(int fd,const void *vptr, size_t n){
       else if(nwritten == 0){
           break;
       }
+      printf("nwritten .......... %ld\n",nwritten );
       nleft -= nwritten;
       ptr += nwritten;
   }
@@ -90,7 +82,7 @@ ssize_t recv_cmd(int fd,void *vptr, size_t n){
   int bytes_read;
   read_again :
   bytes_read = read(fd,(char*)vptr,n);
-  // printf("Bytes read %d\n",bytes_read);
+  printf("Bytes read %d\n",bytes_read);
   if(bytes_read == 0){
     return 0;
   }

@@ -82,31 +82,38 @@ bool recv_confirm(int fd){
     return (arr[0] == '1');
 }
 
-int recv_file(int fd,char* buff,long int size){
-  FILE* fp = fopen(buff,"w+");
+int recv_file(int fd,char* ptr,long int size){
+  char buff[1024];
+  strcpy(buff,ptr);
+
+  int fp = open(buff,O_RDWR | O_CREAT, 0777);
   if(!fp){
     printf("File could not be opened\n");
+    close(fp);
     return 0;
   }
-  readn(fd,(void *)fp,size);
-  fclose(fp);
+  readn(fd,fp,size);
+  close(fp);
   return 0;
 }
 
-int send_file(int fd,char* buff){
+int send_file(int fd,char* ptr){
   char temp[2] = "1";
-  FILE* fp = fopen(buff,"r");
+  char buff[1024];
+  strcpy(buff,ptr);
+
+  int fp = open(buff,O_RDONLY);
   if(!fp){
     printf("%s could not be openend\n",buff);
     return 0;
   }
-
-  fseek(fp,0L,SEEK_END);
-  long int file_size = ftell(fp);
-  fseek(fp,0L,SEEK_SET);
+  struct stat stats;
+  fstat(fp,&stats);
+  long int file_size = stats.st_size;
+  printf("%ld\n",file_size);
   if(file_size>1000000000){
     printf("File too Large. Aborting Sending File.\n");
-    fclose(fp);
+    close(fp);
     return 0;
   }
 
@@ -115,9 +122,9 @@ int send_file(int fd,char* buff){
   printf("ACK recieved\n");
 
   printf("Sending File ...\n");
-  writen(fd,(void* )fp);
-  fclose(fp);
-  printf("File Sent\n\n");
+  long int k = writen(fd,fp);
+  close(fp);
+  printf("File Sent %ld\n\n",k);
   return 0;
 }
 

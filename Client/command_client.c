@@ -1,9 +1,12 @@
-#include "socket.h"
-#include "common_function.c"
+#include "../Common_header/socket.h"
+#include "../Common_header/common_function.c"
 
 
-int getfile(int fd,char* buff, int size){
+int getfile(int fd,char* ptr, int size){
   char temp[2] = "2" ;
+  char buff[1024];
+  strcpy(buff,ptr);
+
   if(check_file(buff)){
     char option;
 
@@ -54,13 +57,16 @@ int getfile(int fd,char* buff, int size){
   return 0;
 }
 
-int putfile(int fd,char* buff, int size){
+int putfile(int fd,char* ptr, int size){
   char temp[2] = "1";
+  char buff[1024];
+  strcpy(buff,ptr);
 
   send_cmd(fd,temp,sizeof(temp));
   recv_cmd(fd,temp,sizeof(temp));
 
   send_cmd(fd,buff,sizeof(buff));
+  printf("This is ..................%s %ld\n", buff,sizeof(buff));
   if(recv_confirm(fd)){
     char option;
     recv_confirmation:
@@ -92,8 +98,10 @@ int putfile(int fd,char* buff, int size){
   return 0;
 }
 
-int mgetfile(int fd,char *buff){
+int mgetfile(int fd,char *ptr){
   char temp[2] = "4";
+  char buff[1024];
+  strcpy(buff,ptr);
 
   send_cmd(fd,temp,sizeof(temp));
   recv_cmd(fd,temp,sizeof(temp));
@@ -108,8 +116,10 @@ int mgetfile(int fd,char *buff){
   recv_cmd(fd,temp,sizeof(temp));
 }
 
-int mputfile(int fd,char *buff){
+int mputfile(int fd,char *ptr){
   char temp[2] = "3";
+  char buff[1024];
+  strcpy(buff,ptr);
 
   send_cmd(fd,temp,sizeof(temp));
   recv_cmd(fd,temp,sizeof(temp));

@@ -1,5 +1,5 @@
-#include "socket.h"
-#include "common_function.c"
+#include "../Common_header/socket.h"
+#include "../Common_header/common_function.c"
 
 int get(int connfd){
   char buff[1024];

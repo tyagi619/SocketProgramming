@@ -1,5 +1,4 @@
-#include "socket.h"
-#include <time.h>
+#include "../Common_header/socket.h"
 #include "command_server.c"
 
 int Socket(int family, int type,int protocol){

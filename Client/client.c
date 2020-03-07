@@ -1,4 +1,4 @@
-#include "socket.h"
+#include "../Common_header/socket.h"
 #include "command_client.c"
 
 int Socket(int family, int type,int protocol){
@@ -50,6 +50,7 @@ int main(int argc, char **argv){
 			case 1 :
 				printf("Enter Filename : ");
 				scanf("%s", buff);
+				printf("%s\n",buff);
 				if(check_file(buff)){
 					putfile(sockfd,buff,sizeof(buff));
 				}
