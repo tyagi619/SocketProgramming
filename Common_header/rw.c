@@ -1,12 +1,11 @@
 ssize_t readn(int fd,int vptr,long int size){
-  printf("Recieving file in progress\n");
+  printf("Recieving file in progress ....\n");
   int fp = vptr;
   long int nleft = size;
   size_t n;
   ssize_t nread;
   char ptr[1024];
   while(nleft>0){
-      printf("%ld\n", nleft);
       if((nread = read(fd,ptr,sizeof(ptr))) < 0){
           if(errno == EINTR)
               nread=0;
@@ -18,7 +17,6 @@ ssize_t readn(int fd,int vptr,long int size){
       }
       n += nread;
       nleft -= nread;
-      printf("%ld\n", nread);
       while(nread>0){
         ssize_t bytes_written = write(fp,ptr,nread);
         nread -= bytes_written;
@@ -60,7 +58,6 @@ ssize_t send_cmd(int fd,const void *vptr, size_t n){
 
   ptr = (char *)vptr;
   nleft = n;
-  printf("nleft .......... %ld %s\n",nleft,ptr );
   while(nleft>0){
       if((nwritten = write(fd,ptr,nleft)) < 0){
           if(errno == EINTR)
@@ -71,7 +68,6 @@ ssize_t send_cmd(int fd,const void *vptr, size_t n){
       else if(nwritten == 0){
           break;
       }
-      printf("nwritten .......... %ld\n",nwritten );
       nleft -= nwritten;
       ptr += nwritten;
   }
@@ -82,7 +78,6 @@ ssize_t recv_cmd(int fd,void *vptr, size_t n){
   int bytes_read;
   read_again :
   bytes_read = read(fd,(char*)vptr,n);
-  printf("Bytes read %d\n",bytes_read);
   if(bytes_read == 0){
     return 0;
   }

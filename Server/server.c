@@ -15,6 +15,8 @@ int main(int argc, char **argv){
 	int listenfd, connfd;
 	struct sockaddr_in servaddr;
 	char buff[MAXLINE];
+	char default_dir_path[1024];
+	getcwd(default_dir_path,sizeof(default_dir_path));
 	time_t ticks;
 
 	listenfd = Socket(AF_INET, SOCK_STREAM, 0);
@@ -27,13 +29,14 @@ int main(int argc, char **argv){
 	listen(listenfd, LISTENQ);
 	char temp[2] = "0";
 
-	printf("Waiting for Connection\n");
+
 
 	for(;;){
-
+		printf("\n\nWaiting for Connection\n");
+		chdir(default_dir_path);
 		connfd = accept(listenfd, (SA *) NULL, NULL);
 
-		printf("Connection Successful\n");
+		printf("Connection Successful\n\n");
 
 		while(1){
 
@@ -58,11 +61,17 @@ int main(int argc, char **argv){
 						mget(connfd);
 						break;
 					case '5':
+						listDirectory(connfd);
+						break;
+					case '6':
+						changedir(connfd);
+						break;
+					case '7':
 						goto out;
 						break;
 					default:
-					return 0;
-						printf("If this Line works then i don't know how the code is running. i guess TCP has an error then.\n");
+						printf("Command Not recognized\n");
+						return 0;
 				}
 		}
 		out:

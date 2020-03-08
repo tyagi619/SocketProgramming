@@ -79,13 +79,14 @@ int mput(int fd){
 
 int mget(int fd){
   char buff[1024];
+  char dir_path[1024];
   char temp[2] = "4";
 
   recv_cmd(fd,buff,sizeof(buff));
 
   DIR *d;
   struct dirent *dir;
-  d = opendir(".");
+  d = opendir(getcwd(dir_path,sizeof(dir_path)));
   if(d){
     while((dir = readdir(d))){
       if(dir->d_type==DT_REG){
@@ -101,6 +102,49 @@ int mget(int fd){
   send_confirm(fd,false);
   recv_cmd(fd,temp,sizeof(temp));
   send_cmd(fd,temp,sizeof(temp));
+
+  return 0;
+}
+
+int listDirectory(int fd){
+  char buff[1024];
+
+  DIR *dir = opendir(getcwd(buff,sizeof(buff)));
+  struct dirent *d;
+  while(dir && (d = readdir(dir))){
+    send_confirm(fd,true);
+    strcpy(buff,d->d_name);
+    send_cmd(fd,buff,sizeof(buff));
+  }
+
+  send_confirm(fd,false);
+  return 0;
+}
+
+int changedir(int fd){
+  char buff[1024];
+  char temp[2] = "6";
+
+  recv_cmd(fd,buff,sizeof(buff));
+  if(chdir(buff)==0){
+    strcpy(buff,"Directory Changed");
+  }
+  else{
+    if(errno == EACCES){
+      strcpy(buff,"Directory Access Permission Denied");
+    }
+    else{
+      strcpy(buff,"Directory Does not exist");
+    }
+  }
+  send_cmd(fd,buff,sizeof(buff));
+
+  getcwd(buff,sizeof(buff));
+  if(errno == ERANGE){
+    strcpy(buff,"Directory Path too large");
+  }
+
+  send_cmd(fd,buff,sizeof(buff));
 
   return 0;
 }

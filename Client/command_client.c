@@ -70,7 +70,7 @@ int putfile(int fd,char* ptr, int size){
   if(recv_confirm(fd)){
     char option;
     recv_confirmation:
-    printf("The file already exists on remote host. Do you wish to overwrite : \n");
+    printf("The file already exists on remote host. Do you wish to overwrite : ");
     scanf("\n%s",&option);
 
     if(option == 'N' || option == 'n'){
@@ -119,12 +119,13 @@ int mgetfile(int fd,char *ptr){
 int mputfile(int fd,char *ptr){
   char temp[2] = "3";
   char buff[1024];
+  char dir_path[1024];
   strcpy(buff,ptr);
 
   send_cmd(fd,temp,sizeof(temp));
   recv_cmd(fd,temp,sizeof(temp));
 
-  DIR *d = opendir(".");
+  DIR *d = opendir(getcwd(dir_path,sizeof(dir_path)));
   struct dirent *dir;
   if(d){
     while((dir = readdir(d))){
@@ -143,8 +144,43 @@ int mputfile(int fd,char *ptr){
 }
 
 int closeConnection(int fd){
-  char temp[2] = "5";
+  char temp[2] = "7";
   send_cmd(fd,temp,sizeof(temp));
   recv_cmd(fd,temp,sizeof(temp));
   return 0;
+}
+
+int listDirectory(int fd){
+  char temp[2] = "5";
+  char buff[1024];
+
+  send_cmd(fd,temp,sizeof(temp));
+  recv_cmd(fd,temp,sizeof(temp));
+  int count = 1;
+  while(recv_confirm(fd)){
+    recv_cmd(fd,buff,sizeof(buff));
+    printf("%d .    %s\n", count,buff);
+    count++;
+  }
+  return 0;
+}
+
+int changedir(int fd, char *ptr){
+  char temp[2] = "6";
+  char buff[1024];
+  strcpy(buff,ptr);
+
+  send_cmd(fd,temp,sizeof(temp));
+  recv_cmd(fd,temp,sizeof(temp));
+
+  send_cmd(fd,buff,sizeof(buff));
+
+  recv_cmd(fd,buff,sizeof(buff));
+  printf("Message : %s\n",buff );
+
+  recv_cmd(fd,buff,sizeof(buff));
+  printf("Current directory : %s\n",buff);
+
+  return 0;
+
 }

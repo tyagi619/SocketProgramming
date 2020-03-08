@@ -42,7 +42,7 @@ int main(int argc, char **argv){
 	int option;
 	while(1){
 
-		printf("\nEnter Key For The Coomand\n 1. Put \n 2. Get \n 3. Mput \n 4. Mget \n 5. Close Connection :\n");
+		printf("\nEnter Key For The Coomand\n 1. Put \n 2. Get \n 3. Mput \n 4. Mget \n 5. List Directory Contents \n 6. Change Directory \n 7. Close Connection\n \n");
 
 		scanf("%d", &option);
 
@@ -74,9 +74,19 @@ int main(int argc, char **argv){
 				mgetfile(sockfd,buff);
 				break;
 			case 5 :
+				listDirectory(sockfd);
+				break;
+			case 6 :
+				printf("Enter directory name or .. to go back : ");
+				scanf("\n%s",buff);
+				printf("Input\n");
+				changedir(sockfd,buff);
+				break;
+			case 7 :
 				closeConnection(sockfd);
 				close(sockfd);
 				goto out;
+				break;
 			default :
 				printf("Command not recognized\n");
 		}

@@ -2,10 +2,11 @@
 #include "rw.c"
 
 bool check_file(char* buff){
+  char dir_path[1024];
   printf("Checking %s on local host\n",buff );
   DIR *d;
   struct dirent *dir;
-  d = opendir(".");
+  d = opendir(getcwd(dir_path,sizeof(dir_path)));
   if (d){
        while ((dir = readdir(d)) != NULL)
        {
@@ -26,21 +27,16 @@ bool check_file(char* buff){
 long int recv_file_size(int fd){
   char size_file[11];
   recv_cmd(fd,size_file,sizeof(size_file));
-  printf("Recieved file size\n");
   long int file_size = atol(size_file);
-  printf("Size of requested file is: %ld bytes\n\n", file_size);
+  printf("\nSize of requested file is: %ld bytes\n", file_size);
   return file_size;
 }
 
 int send_file_size(int fd,long int file_size){
   char size_file[11];
-
   sprintf(size_file, "%010ld", file_size);
-  printf("\n%s\n", size_file);
-
   send_cmd(fd,size_file,sizeof(size_file));
   printf("File size sent\n");
-
   return 0;
 }
 
@@ -63,10 +59,8 @@ int send_confirm(int fd,bool option){
 bool recv_confirm(int fd){
     char arr[2];
     int bytes_read;
-
     recv_again :
     bytes_read = read(fd,arr,sizeof(arr));
-    printf("Server returned file status : %s\n",arr);
     if(bytes_read == 0){
       return 0;
     }
@@ -119,7 +113,6 @@ int send_file(int fd,char* ptr){
 
   send_file_size(fd,file_size);
   recv_cmd(fd,temp,sizeof(temp));
-  printf("ACK recieved\n");
 
   printf("Sending File ...\n");
   long int k = writen(fd,fp);
