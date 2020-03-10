@@ -37,7 +37,14 @@ int getfile(int fd,char* ptr, int size){
 
     send_cmd(fd,temp,sizeof(temp));
     printf("ACK sent\n" );
-
+    if(!recv_confirm(fd)){
+      printf("File could not be opened\n");
+      return 0;
+    }
+    if(!recv_confirm(fd)){
+      printf("File size too large, try again later\n");
+      return 0;
+    }
     long int file_size = recv_file_size(fd);
 
     send_cmd(fd,temp,sizeof(temp));
@@ -92,8 +99,9 @@ int putfile(int fd,char* ptr, int size){
     recv_cmd(fd,temp,sizeof(temp));
   }
 
-  send_file(fd,buff);
-  recv_cmd(fd,temp,sizeof(temp));
+  if(send_file(fd,buff) == 0){
+    recv_cmd(fd,temp,sizeof(temp));
+  }
 
   return 0;
 }
@@ -105,7 +113,6 @@ int mgetfile(int fd,char *ptr){
 
   send_cmd(fd,temp,sizeof(temp));
   recv_cmd(fd,temp,sizeof(temp));
-
   send_cmd(fd,buff,sizeof(buff));
   while(recv_confirm(fd)){
     send_cmd(fd,temp,sizeof(temp));

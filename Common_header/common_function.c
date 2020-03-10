@@ -61,6 +61,7 @@ bool recv_confirm(int fd){
     int bytes_read;
     recv_again :
     bytes_read = read(fd,arr,sizeof(arr));
+
     if(bytes_read == 0){
       return 0;
     }
@@ -98,19 +99,22 @@ int send_file(int fd,char* ptr){
 
   int fp = open(buff,O_RDONLY);
   if(!fp){
+    send_confirm(fd,false);
     printf("%s could not be openend\n",buff);
-    return 0;
+    return -1;
   }
+  send_confirm(fd,true);
   struct stat stats;
   fstat(fp,&stats);
   long int file_size = stats.st_size;
   printf("%ld\n",file_size);
   if(file_size>1000000000){
+    send_confirm(fd,false);
     printf("File too Large. Aborting Sending File.\n");
     close(fp);
-    return 0;
+    return -1;
   }
-
+  send_confirm(fd,true);
   send_file_size(fd,file_size);
   recv_cmd(fd,temp,sizeof(temp));
 
@@ -132,8 +136,9 @@ int send_one_file(int fd, char *name){
     return 0;
   }
 
-  send_file(fd,buff);
-  recv_cmd(fd,temp,sizeof(temp));
+  if(send_file(fd,buff) == 0){
+    recv_cmd(fd,temp,sizeof(temp));
+  }
 
   return 0;
 }
@@ -164,6 +169,14 @@ int recv_one_file(int fd){
   }
   else{
     send_confirm(fd,true);
+  }
+  if(!recv_confirm(fd)){
+    printf("File could not be opened\n");
+    return 0;
+  }
+  if(!recv_confirm(fd)){
+    printf("File size too large, try again later\n");
+    return 0;
   }
   long int file_size = recv_file_size(fd);
   send_cmd(fd,temp,sizeof(temp));
@@ -200,9 +213,14 @@ int put_one_file(int fd, char *name){
       goto put_file_confirm;
     }
   }
+  else{
+    send_confirm(fd,true);
+    recv_cmd(fd,temp,sizeof(temp));
+  }
 
-  send_file(fd,buff);
-  recv_cmd(fd,temp,sizeof(temp));
+  if(send_file(fd,buff) == 0){
+    recv_cmd(fd,temp,sizeof(temp));
+  }
   return 0;
 }
 
@@ -225,7 +243,14 @@ int recv_put_one_file(int fd){
     send_cmd(fd,temp,sizeof(temp));
     return 0;
   }
-
+  if(!recv_confirm(fd)){
+    printf("File could not be opened\n");
+    return 0;
+  }
+  if(!recv_confirm(fd)){
+    printf("File size too large, try again later\n");
+    return 0;
+  }
   long int file_size = recv_file_size(fd);
   send_cmd(fd,temp,sizeof(temp));
 

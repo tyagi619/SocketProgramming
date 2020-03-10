@@ -16,7 +16,9 @@ int get(int connfd){
     recv_cmd(connfd,temp,sizeof(temp));
     printf("ACK recieved\n");
 
-    send_file(connfd,buff);
+    if(send_file(connfd,buff)<0){
+      return 0;
+    }
 
     recv_cmd(connfd,temp,sizeof(temp));
     printf("ACK recieved\n");
@@ -56,7 +58,14 @@ int put(int fd){
     recv_confirm(fd);
     send_cmd(fd,temp,sizeof(temp));
   }
-
+  if(!recv_confirm(fd)){
+    printf("File could not be opened\n");
+    return 0;
+  }
+  if(!recv_confirm(fd)){
+    printf("File size too large, try again later\n");
+    return 0;
+  }
   long int file_size = recv_file_size(fd);
   send_cmd(fd,temp,sizeof(temp));
 
@@ -83,7 +92,6 @@ int mget(int fd){
   char temp[2] = "4";
 
   recv_cmd(fd,buff,sizeof(buff));
-
   DIR *d;
   struct dirent *dir;
   d = opendir(getcwd(dir_path,sizeof(dir_path)));
