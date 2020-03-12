@@ -17,20 +17,26 @@ int Socket(int family, int type, int protocol) {
 
 int main(int argc, char **argv) {
     // declarations
-    int listenfd, connfd;
+    int listenfd, connfd, servport;
     struct sockaddr_in servaddr;
     char buff[MAXLINE];
     char default_dir_path[1024];
     getcwd(default_dir_path, sizeof(default_dir_path));
     time_t ticks;
 
+    if (argc != 2) {
+        printf("usage: a.out <Server Port number>\n");
+        return -1;
+    }
+
+    servport = atoi(argv[1]);
     listenfd = Socket(AF_INET, SOCK_STREAM, 0);
 
     bzero(&servaddr, sizeof(servaddr));  // set all bits in serveraddr 0
     servaddr.sin_family = AF_INET;       // set server IP address type to IPv4
     servaddr.sin_addr.s_addr =
-        htonl(INADDR_ANY);                // accept any incoming messages
-    servaddr.sin_port = htons(SERV_PORT); /* daytime server */
+        htonl(INADDR_ANY);               // accept any incoming messages
+    servaddr.sin_port = htons(servport); /* daytime server */
 
     // Give the socket listenfd the local address servaddr
     // (which is sz(serveraddr) bytes long).

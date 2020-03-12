@@ -17,13 +17,13 @@ int Socket(int family, int type, int protocol) {
 
 int main(int argc, char **argv) {
     // declarations
-    int sockfd, n;
+    int sockfd, n, servport;
     char recvline[MAXLINE + 1];
     struct sockaddr_in servaddr;
 
     // check if server IP addr given , application port already known
-    if (argc != 2) {
-        printf("usage: a.out <IPaddress>");
+    if (argc != 3) {
+        printf("usage: a.out <Server IP Address> <Server Port number>\n");
         return -1;
     }
 
@@ -37,8 +37,8 @@ int main(int argc, char **argv) {
      * will therefore swap the bytes making up the number so that in memory the
      * bytes will be stored in the order
      */
-
-    servaddr.sin_port = htons(SERV_PORT); /* daytime server */
+    servport = atoi(argv[2]);
+    servaddr.sin_port = htons(servport); /* daytime server */
 
     // Convert and store IP address currently in the presenatation format to
     // binary format
