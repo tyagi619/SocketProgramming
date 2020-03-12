@@ -64,7 +64,7 @@ int main(int argc, char **argv) {
 
         while (1) {
             recv_cmd(connfd, temp, sizeof(temp));
-            printf("Option recieved\n");
+            printf("Option received\n");
             printf("Option chosen : %s\n", temp);
 
             send_cmd(connfd, temp, sizeof(temp));

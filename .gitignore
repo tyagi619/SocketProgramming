@@ -10,4 +10,7 @@
 /Client/b.txt
 /Server/YoungS.mp4
 /Client/YoungS.mp4
+*.py
+*.cpp
+*.txt
 
