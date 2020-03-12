@@ -4,8 +4,8 @@
 
 int Socket(int family, int type, int protocol) {
     /* This function requests a socket from the os
-     * It exists the application after printing error if the Os cannot provide a
-     * socket
+     * It exists the application after printing error
+     * if the Os cannot provide a socket
      */
     int n;
     if ((n = socket(family, type, protocol)) < 0) {
