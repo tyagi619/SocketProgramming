@@ -100,7 +100,9 @@ int mget(int fd) {
     if (d) {
         while ((dir = readdir(d))) {
             if (dir->d_type == DT_REG) {
-                if (strstr(dir->d_name, buff)) {
+                char extbuf[1024];
+                get_filename_ext(dir->d_name, extbuf);
+                if (strcmp(extbuf, buff) == 0) {
                     send_confirm(fd, true);
                     recv_cmd(fd, temp, sizeof(temp));
                     send_one_file(fd, dir->d_name);

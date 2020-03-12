@@ -59,6 +59,7 @@ ssize_t writen(int fd, int vptr) {
             }
         }
         send(fd, ptr, bytes_read, 0);
+        n += bytes_read;
     }
     return n;
 }

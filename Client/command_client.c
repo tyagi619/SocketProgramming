@@ -97,7 +97,8 @@ int putfile(int fd, char *ptr, int size) {
         char option;
     recv_confirmation:
         printf(
-            "The file already exists on remote host. Do you wish to overwrite "
+            "The file already exists on remote host. Do you wish to "
+            "overwrite(y/n) "
             ": ");
         scanf("\n%s", &option);
 
@@ -161,7 +162,9 @@ int mputfile(int fd, char *ptr) {
     if (d) {
         while ((dir = readdir(d))) {
             if (dir->d_type == DT_REG) {
-                if (strstr(dir->d_name, buff)) {
+                char extbuf[1024];
+                get_filename_ext(dir->d_name, extbuf);
+                if (strcmp(extbuf, buff) == 0) {
                     send_confirm(fd, true);
                     recv_cmd(fd, temp, sizeof(temp));
                     put_one_file(fd, dir->d_name);

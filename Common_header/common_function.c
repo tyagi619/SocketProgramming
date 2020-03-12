@@ -174,7 +174,7 @@ int recv_one_file(int fd) {
         char option;
 
     confirm_recv:
-        printf("The file %s already exists. Do you wish to overwrite? : ",
+        printf("The file %s already exists. Do you wish to overwrite(y/n)? : ",
                buff);
         scanf("\n%c", &option);
 
@@ -224,7 +224,7 @@ int put_one_file(
         char option;
 
     put_file_confirm:
-        printf("The file %s already exists. Do you want to overwrite? : ",
+        printf("The file %s already exists. Do you want to overwrite(y/n)? : ",
                buff);
         scanf("\n%c",
               &option);  // if file exists and user wants to over-write or not.
@@ -287,4 +287,12 @@ int recv_put_one_file(
               file_size);  // receive file function to receive file contents.
     send_cmd(fd, temp, sizeof(temp));
     return 0;
+}
+
+void get_filename_ext(char *filename, char *extbuff) {
+    const char *dot = strrchr(filename, '.');
+    if (!dot || dot == filename)
+        strcpy(extbuff, "");
+    else
+        strcpy(extbuff, dot + 1);
 }
