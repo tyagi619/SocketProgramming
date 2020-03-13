@@ -56,7 +56,14 @@ int main(int argc, char **argv) {
         return -1;
     }
 
-    printf("Connection Successful\n");
+    char temp[2];
+    recv_cmd(sockfd, temp, sizeof(temp));
+    if (strcmp(temp, "8") == 0) {
+        printf("Connection Successful\n");
+    } else {
+        printf("Connection Unsuccessful\n");
+        return 0;
+    }
 
     // Dclarations : buffer and options
     char buff[1024];
