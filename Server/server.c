@@ -49,6 +49,8 @@ int main(int argc, char **argv) {
     listen(listenfd, LISTENQ);
 
     char temp[2] = "0";
+    int pid;
+    int ct = 0;
 
     for (;;) {
         printf("\n\nWaiting for Connection\n");
@@ -58,46 +60,71 @@ int main(int argc, char **argv) {
          * When a connection arrives, open a
          * new socket to communicate with it,
          */
+        printf("%d\n", ct);
+        int t = waitpid(-1, NULL, WNOHANG);
+        if (t > 0) ct--;
+        if (ct == ACCEPTQ) {
+            printf("WAITING\n");
+            connfd = accept(listenfd, (SA *)NULL, NULL);
+            strcpy(temp, "9");
+            send_cmd(connfd, temp, sizeof(temp));
+            close(connfd);
+            wait(NULL);
+            ct--;
+        }
         connfd = accept(listenfd, (SA *)NULL, NULL);
 
         printf("Connection Successful\n\n");
+        ct++;
+        strcpy(temp, "8");
+        send_cmd(connfd, temp, sizeof(temp));
 
-        while (1) {
-            recv_cmd(connfd, temp, sizeof(temp));
-            printf("Option received\n");
-            printf("Option chosen : %s\n", temp);
+        pid = fork();
+        if (pid < 0) {
+            printf("ERROR in new process creation");
+        } else if (pid == 0) {
+            // child process
+            close(listenfd);
+            while (1) {
+                recv_cmd(connfd, temp, sizeof(temp));
+                printf("Option received\n");
+                printf("Option chosen : %s\n", temp);
 
-            send_cmd(connfd, temp, sizeof(temp));
-            printf("ACK sent\n");
+                send_cmd(connfd, temp, sizeof(temp));
+                printf("ACK sent\n");
 
-            switch (temp[0]) {
-                case '1':
-                    put(connfd);
-                    break;
-                case '2':
-                    get(connfd);
-                    break;
-                case '3':
-                    mput(connfd);
-                    break;
-                case '4':
-                    mget(connfd);
-                    break;
-                case '5':
-                    listDirectory(connfd);
-                    break;
-                case '6':
-                    changedir(connfd);
-                    break;
-                case '7':
-                    goto out;
-                    break;
-                default:
-                    printf("Command Not recognized\n");
-                    return 0;
+                switch (temp[0]) {
+                    case '1':
+                        put(connfd);
+                        break;
+                    case '2':
+                        get(connfd);
+                        break;
+                    case '3':
+                        mput(connfd);
+                        break;
+                    case '4':
+                        mget(connfd);
+                        break;
+                    case '5':
+                        listDirectory(connfd);
+                        break;
+                    case '6':
+                        changedir(connfd);
+                        break;
+                    case '7':
+                        goto out;
+                        break;
+                    default:
+                        printf("Command Not recognized\n");
+                }
             }
+        out:
+            close(connfd);
+            return 0;
+        } else {
+            // parent process
+            close(connfd);
         }
-    out:
-        close(connfd);
     }
 }
