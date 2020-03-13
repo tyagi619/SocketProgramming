@@ -63,6 +63,7 @@ int main(int argc, char **argv) {
         printf("%d\n", ct);
         int t = waitpid(-1, NULL, WNOHANG);
         if (t > 0) ct--;
+        printf("%d\n", t);
         if (ct == ACCEPTQ) {
             printf("WAITING\n");
             connfd = accept(listenfd, (SA *)NULL, NULL);
@@ -86,6 +87,7 @@ int main(int argc, char **argv) {
             // child process
             close(listenfd);
             while (1) {
+                char temp[2] = "0";
                 recv_cmd(connfd, temp, sizeof(temp));
                 printf("Option received\n");
                 printf("Option chosen : %s\n", temp);
