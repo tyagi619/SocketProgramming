@@ -97,7 +97,7 @@ ssize_t recv_cmd(int fd, void *vptr, size_t n) {
     ssize_t nread;
     char ptr[1024];
     while (nleft > 0) {  // while nleft>0 ie. file contents still left to sent.
-        if ((nread = read(fd, vptr, nleft) < 0) {
+        if ((nread = read(fd, vptr, nleft)) < 0) {
             // nread to read content from buffer (fd) into ptr.
             if (errno == EINTR)
                 // if interrupt occurs, put nread=0 and start again.
