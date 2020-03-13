@@ -92,19 +92,23 @@ ssize_t send_cmd(int fd, const void *vptr, size_t n) {
 ssize_t recv_cmd(int fd, void *vptr, size_t n) {
     // read n bytes into buffer from the socket and return the number of bytes
     // read
-    int bytes_read;
-read_again:
-    bytes_read = read(fd, (char *)vptr, n);
-    if (bytes_read == 0) {
-        return 0;
-    }
-    if (bytes_read < 0) {
-        if (errno == EINTR) {
-            bytes_read = 0;
-            goto read_again;
-        } else {
-            return -1;
+    long int nleft = n;
+    // nleft variable to store size of the file content.
+    ssize_t nread;
+    char ptr[1024];
+    while (nleft > 0) {  // while nleft>0 ie. file contents still left to sent.
+        if ((nread = read(fd, vptr, nleft) < 0) {
+            // nread to read content from buffer (fd) into ptr.
+            if (errno == EINTR)
+                // if interrupt occurs, put nread=0 and start again.
+                nread = 0;
+            else
+                return -1;
+        } else if (nread == 0) {  // else if file content is over.
+            break;
         }
+        nleft -= nread;
+        vptr += nread;
     }
-    return (ssize_t)bytes_read;
+    return n-nleft;
 }
